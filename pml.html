@@ -79,7 +79,7 @@ testSA = trainSmall[-train,]
 
 set.seed(13234)
 
-modelFit &lt;- train(trainSA$classe ~ .,method=&quot;rpart&quot;,data=trainSA,na.action=na.omit)
+modelFit &lt;- train(trainSA$classe ~ .,method=&quot;rf&quot;,data=trainSA)
 
 print(modelFit$finalModel)</code></pre>
 <p>The model was good as it is seen from the confusion matrix for the test set <code>testSA</code>:</p>
