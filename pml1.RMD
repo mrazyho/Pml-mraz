@@ -1,0 +1,61 @@
+---
+title: "Practical Machine Learning - Assignment"
+author: "Frantisek Mraz"
+date: "Monday, August 25, 2014"
+output: html_document
+---
+
+
+Alter loading the data using read.csv(), it appears a 
+column named "X" which is simply index of the row. Hence I removed it and also 
+the first real column containing user_name.
+```{r}
+library(caret)
+training = read.csv("pml-training.csv")
+training = training[c(-1,-2)]
+
+testing = read.csv("pml-testing.csv")
+testing = testing[c(-1,-2)]
+```
+
+The main problem with the data were undefined values NA and empty values. They 
+can be removed
+
+```{r}
+isna = is.na(training)*1
+trainNNA = training[colSums(isna)==0]
+
+isnull = (trainNNA=="")*1
+trainSmall = trainNNA[colSums(isnull)==0]
+```
+
+I have used random forest for fitting the data. In order to save time, I trained the model on a half of the available samples 
+
+```{r}
+train = sample(1:dim(trainSmall)[1],size=dim(trainSmall)[1]/2,replace=F)
+trainSA = trainSmall[train,]
+testSA = trainSmall[-train,]
+
+set.seed(13234)
+
+modelFit <- train(trainSA$classe ~ .,method="rf",data=trainSA)
+print(modelFit$finalModel)
+```
+
+The model was good as it is seen from the confusion matrix for the test set `testSA`:
+
+```{r}
+predTest = predict(modelFit, testSA)
+confusionMatrix(testSA$classe,predTest)
+```
+
+As the accuracy of the model is more than 99% on unseen data and the test data were so large (almost 10.000 samples), I did not made any cross-validation.
+
+Before applying the model to other data, they must be preprocessed in the same way as the training data. For solving the assignment
+
+```{r}
+testNNA = testing[colSums(isna)==0]
+testSmall = testNNA[colSums(isnull)==0]
+predTestSmall = predict(modelFit, testSmall)
+print(predTestSmall)
+```
