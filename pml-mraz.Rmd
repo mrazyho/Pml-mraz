@@ -39,7 +39,7 @@ testSA = trainSmall[-train,]
 
 set.seed(13234)
 
-modelFit <- train(trainSA$classe ~ .,method="rpart",data=trainSA,na.action=na.omit)
+modelFit <- train(trainSA$classe ~ .,method="rf",data=trainSA)
 
 print(modelFit$finalModel)
 ```
